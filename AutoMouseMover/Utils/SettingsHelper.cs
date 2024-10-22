@@ -33,13 +33,19 @@ namespace AutoMouseMover.Utils
         #region Constants
 
         // Defautl moving period
-        private const int DEF_MOVING_PERIOD       = 5;
+        private const int DEF_MOVING_PERIOD = 5;
         // Default moving pixel
-        private const int DEF_MOVING_PIXEL        = 5;
+        private const int DEF_MOVING_PIXEL = 5;
         // Default minimize to tray bar
-        private const bool DEF_MINIMIZE_TRAY_BAR  = true;
+        private const bool DEF_MINIMIZE_TRAY_BAR = true;
         // Default show tray bar icon
+        private const bool DEF_SCREENSAVER_ENABLED = true;
+
         private const bool DEF_SHOW_TRAY_BAR_ICON = true;
+
+        private const int DEF_SCREENSAVER_IDLE_TIME = 300;
+
+        private const double DEF_SCREENSAVER_OPACITY = 60;
 
         #endregion
 
@@ -49,13 +55,16 @@ namespace AutoMouseMover.Utils
         #region Members
 
         // Moving period
-        private int  mMovingPeriod;
+        private int mMovingPeriod;
         // Moving pixel
-        private int  mMovingPixel;
+        private int mMovingPixel;
         // Minimize to tray flag
         private bool mMinimizeToTrayBar;
         // Show tray icon flag
         private bool mShowTrayBarIcon;
+        private bool mScreenSaverEnabled;
+        private int mScreenSaverIdleTimeInSeconds;
+        private double mScreenSaverOpacity;
 
         #endregion
 
@@ -73,24 +82,33 @@ namespace AutoMouseMover.Utils
         // Load settings
         public void Load()
         {
-            mMovingPeriod      = Properties.Settings.Default.MovingPeriod;
-            mMovingPixel       = Properties.Settings.Default.MovingPixel;
+            mMovingPeriod = Properties.Settings.Default.MovingPeriod;
+            mMovingPixel = Properties.Settings.Default.MovingPixel;
+            mScreenSaverEnabled = Properties.Settings.Default.ScreenSaverEnabled;
+            mScreenSaverIdleTimeInSeconds = Properties.Settings.Default.ScreenSaverIdleTimeInSeconds;
+            mScreenSaverOpacity = Properties.Settings.Default.ScreenSaverOpacity;
         }
 
         // Load default settings
         public void LoadDefault()
         {
-            mMovingPeriod      = DEF_MOVING_PERIOD;
-            mMovingPixel       = DEF_MOVING_PIXEL;
+            mMovingPeriod = DEF_MOVING_PERIOD;
+            mMovingPixel = DEF_MOVING_PIXEL;
             mMinimizeToTrayBar = DEF_MINIMIZE_TRAY_BAR;
-            mShowTrayBarIcon   = DEF_SHOW_TRAY_BAR_ICON;
+            mShowTrayBarIcon = DEF_SHOW_TRAY_BAR_ICON;
+            mScreenSaverEnabled = DEF_SCREENSAVER_ENABLED;
+            mScreenSaverIdleTimeInSeconds = DEF_SCREENSAVER_IDLE_TIME;
+            mScreenSaverOpacity = DEF_SCREENSAVER_OPACITY;
         }
 
         // Save settings
         public void Save()
         {
-            Properties.Settings.Default.MovingPeriod      = mMovingPeriod;
-            Properties.Settings.Default.MovingPixel       = mMovingPixel;
+            Properties.Settings.Default.MovingPeriod = mMovingPeriod;
+            Properties.Settings.Default.MovingPixel = mMovingPixel;
+            Properties.Settings.Default.ScreenSaverEnabled = mScreenSaverEnabled;
+            Properties.Settings.Default.ScreenSaverIdleTimeInSeconds = mScreenSaverIdleTimeInSeconds;
+            Properties.Settings.Default.ScreenSaverOpacity = mScreenSaverOpacity;
             Properties.Settings.Default.Save();
         }
 
@@ -100,7 +118,7 @@ namespace AutoMouseMover.Utils
         // Properties
         //
         #region Properties
-        
+
         // Moving time property
         public int MovingTime
         {
@@ -127,6 +145,32 @@ namespace AutoMouseMover.Utils
         {
             get { return mShowTrayBarIcon; }
             set { mShowTrayBarIcon = value; }
+        }
+
+        public bool ScreenSaverEnabled
+        {
+            get { return mScreenSaverEnabled; }
+            set
+            {
+                mScreenSaverEnabled = value;
+            }
+        }
+
+        public int ScreenSaverIdleTimeInSeconds
+        {
+            get { return mScreenSaverIdleTimeInSeconds; }
+            set
+            {
+                mScreenSaverIdleTimeInSeconds = value;
+            }
+        }
+        public double ScreenSaverOpacity
+        {
+            get { return mScreenSaverOpacity; }
+            set
+            {
+                mScreenSaverOpacity = value;
+            }
         }
 
         #endregion

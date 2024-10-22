@@ -22,16 +22,21 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
+using AutoMouseMover.Form;
 using AutoMouseMover.Logic;
 using AutoMouseMover.Utils;
+using AutoMouseMover.WinWrapper;
 
 namespace AutoMouseMover
 {
     //
     // Main form
     //
-    public partial class AutoMouseMoverForm : Form
+    public partial class AutoMouseMoverForm : System.Windows.Forms.Form
     {
         //
         // Constants
@@ -39,11 +44,11 @@ namespace AutoMouseMover
         #region Constants
 
         // Idle status string
-        private const string STATUS_IDLE_STR    = "idle";
+        private const string STATUS_IDLE_STR = "idle";
         // Running status string
         private const string STATUS_RUNNING_STR = "running";
         // Balloon tip timeout
-        private const int  BALLOON_TIP_TIMEOUT  = 500;
+        private const int BALLOON_TIP_TIMEOUT = 500;
 
         #endregion
 
@@ -55,10 +60,14 @@ namespace AutoMouseMover
         // Automatic mouse mover
         private AutomaticMouseMover mAutoMouseMover;
         // Settings
-        private SettingsHelper      mSettings;
+        private SettingsHelper mSettings;
 
         private bool mApplicationExiting;
         ComponentResourceManager Resources;
+
+        private ScreensaverOverlayForm OverlayForm;
+        private DateTime lastInputTime;
+        private bool mMouseMovedByApplication;
 
         #endregion
 
@@ -80,6 +89,8 @@ namespace AutoMouseMover
             // Set status
             SetStatus(STATUS_IDLE_STR);
             MinimizeWindowToTrayBar();
+            OverlayForm = new ScreensaverOverlayForm();
+            OverlayForm.Hide();
         }
 
         #endregion
@@ -92,25 +103,55 @@ namespace AutoMouseMover
         // Start button
         private void StartButton_Click(object sender, EventArgs e)
         {
+            SaveSettings();
             // Disable GUI on start
             DisableGuiOnStart();
             // Set status
             SetStatus(STATUS_RUNNING_STR);
-            TrayBarIcon.Icon = (System.Drawing.Icon)this.Resources.GetObject("app_icon_green");
+
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AutoMouseMover.app_icon_green.ico"))
+            {
+                if (stream != null)
+                {
+                    TrayBarIcon.Icon = new Icon(stream);
+                }
+            }
+            
             // Initialize auto mouse mover class
-            mAutoMouseMover.Initialize((int) MovingPixelBox.Value);
+            mAutoMouseMover.Initialize((int)MovingPixelBox.Value);
             // Set timer interval and start it
-            CursorTimer.Interval = ((int) MovingPeriodBox.Value) * 1000;
+            CursorTimer.Interval = ((int)MovingPeriodBox.Value) * 1000;
             CursorTimer.Start();
+
+            if (mSettings.ScreenSaverEnabled)
+            {
+                HookManager.KeyPress -= HookManager_KeyPress;
+                HookManager.MouseMove -= HookManager_MouseMove;
+                HookManager.KeyPress += HookManager_KeyPress;
+                HookManager.MouseMove += HookManager_MouseMove;
+                lastInputTime = DateTime.Now;
+                IdleScreensaverTimer.Interval = mSettings.ScreenSaverIdleTimeInSeconds;
+                IdleScreensaverTimer.Start();
+            }
         }
 
         // Stop button
         private void StopButton_Click(object sender, EventArgs e)
         {
             SetStatus(STATUS_IDLE_STR);
-            TrayBarIcon.Icon = (System.Drawing.Icon)this.Resources.GetObject("app_icon_white");
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AutoMouseMover.app_icon_white.ico"))
+            {
+                if (stream != null)
+                {
+                    TrayBarIcon.Icon = new Icon(stream);
+                }
+            }
             EnableGuiOnStop();
             CursorTimer.Stop();
+
+            HookManager.KeyPress -= HookManager_KeyPress;
+            HookManager.MouseMove -= HookManager_MouseMove;
+            IdleScreensaverTimer.Stop();
         }
 
         // Tray icon double clicked
@@ -183,7 +224,51 @@ namespace AutoMouseMover
         // Cursor timer elapsed
         private void CursorTimer_Tick(object sender, EventArgs e)
         {
+            mMouseMovedByApplication = true;
             mAutoMouseMover.MoveMouse();
+            mMouseMovedByApplication = false;
+        }
+
+        //IdleScreensaverTimer elapsed
+        private void IdleScreensaverTimer_Tick(object sender, EventArgs e)
+        {
+            if ((DateTime.Now - lastInputTime).TotalSeconds > mSettings.ScreenSaverIdleTimeInSeconds)
+            {
+                OverlayForm.InitializeAlpha(mSettings.ScreenSaverOpacity);
+                OverlayForm.Show();
+                OverlayForm.BringToFront();
+            }
+        }
+
+        private void HookManager_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            lastInputTime = DateTime.Now;
+            if (OverlayForm.Visible)
+            {
+                OverlayForm.Hide();
+            }
+        }
+
+        private void HookManager_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!mMouseMovedByApplication)
+            {
+                lastInputTime = DateTime.Now;
+                if (OverlayForm.Visible)
+                {
+                    OverlayForm.Hide();
+                }
+            }
+        }
+
+        private void PreviewButton_Click(object sender, EventArgs e)
+        {
+            HookManager.KeyPress -= HookManager_KeyPress;
+            HookManager.MouseMove -= HookManager_MouseMove;
+            HookManager.KeyPress += HookManager_KeyPress;
+            HookManager.MouseMove += HookManager_MouseMove;
+            OverlayForm.InitializeAlpha((int)ScreenSaverOpacityBox.Value);
+            OverlayForm.Show();
         }
 
         #endregion
@@ -198,47 +283,90 @@ namespace AutoMouseMover
         {
             try
             {
-                MovingPeriodBox.Value        = mSettings.MovingTime;
-                MovingPixelBox.Value         = mSettings.MovingPixel;
+                MovingPeriodBox.Value = mSettings.MovingTime;
+                MovingPixelBox.Value = mSettings.MovingPixel;
+                ScreenSaverEnabledCheckBox.Checked = mSettings.ScreenSaverEnabled;
+                ScreenSaverIdleTimeBox.Value = mSettings.ScreenSaverIdleTimeInSeconds;
+                ScreenSaverOpacityBox.Value = (decimal)mSettings.ScreenSaverOpacity;
             }
             catch
             {
                 // Default settings in case of errors
                 mSettings.LoadDefault();
                 // Set again
-                MovingPeriodBox.Value        = mSettings.MovingTime;
-                MovingPixelBox.Value         = mSettings.MovingPixel;
+                MovingPeriodBox.Value = mSettings.MovingTime;
+                MovingPixelBox.Value = mSettings.MovingPixel;
+                ScreenSaverEnabledCheckBox.Checked = mSettings.ScreenSaverEnabled;
+                ScreenSaverIdleTimeBox.Value = mSettings.ScreenSaverIdleTimeInSeconds;
+                ScreenSaverOpacityBox.Value = (decimal)mSettings.ScreenSaverOpacity;
             }
         }
 
         // Save settings
         private void SaveSettings()
         {
-            mSettings.MovingTime        = (int) MovingPeriodBox.Value;
-            mSettings.MovingPixel       = (int) MovingPixelBox.Value;
+            mSettings.MovingTime = (int)MovingPeriodBox.Value;
+            mSettings.MovingPixel = (int)MovingPixelBox.Value;
+            mSettings.ScreenSaverEnabled = ScreenSaverEnabledCheckBox.Checked;
+            mSettings.ScreenSaverIdleTimeInSeconds = (int)ScreenSaverIdleTimeBox.Value;
+            mSettings.ScreenSaverOpacity = (int)ScreenSaverOpacityBox.Value;
             mSettings.Save();
         }
 
         // Disable GUI on start
         private void DisableGuiOnStart()
         {
-            MovingPeriodBox.Enabled      = false;
-            MovingPixelBox.Enabled       = false;
-            StartButton.Enabled          = false;
-            StopButton.Enabled           = true;
+            MovingPeriodBox.Enabled = false;
+            MovingPixelBox.Enabled = false;
+            StartButton.Enabled = false;
+            StopButton.Enabled = true;
             TrayBarMenuStart.Enabled = false;
             TrayBarMenuStop.Enabled = true;
+            ScreenSaverEnabledCheckBox.Enabled = false;
+            ScreenSaverIdleTimeBox.Enabled = false;
+            ScreenSaverOpacityBox.Enabled = false;
+            PreviewButton.Enabled = false;
         }
 
         // Enable GUI on stop
         private void EnableGuiOnStop()
         {
-            MovingPeriodBox.Enabled      = true;
-            MovingPixelBox.Enabled       = true;
-            StartButton.Enabled          = true;
-            StopButton.Enabled           = false;
+            MovingPeriodBox.Enabled = true;
+            MovingPixelBox.Enabled = true;
+            StartButton.Enabled = true;
+            StopButton.Enabled = false;
             TrayBarMenuStart.Enabled = true;
             TrayBarMenuStop.Enabled = false;
+            ScreenSaverEnabledCheckBox.Enabled = true;
+            if (mSettings.ScreenSaverEnabled)
+            {
+                ScreenSaverIdleTimeBox.Enabled = true;
+                ScreenSaverOpacityBox.Enabled = true;
+                PreviewButton.Enabled = true;
+            }
+            else
+            {
+                ScreenSaverIdleTimeBox.Enabled = false;
+                ScreenSaverOpacityBox.Enabled = false;
+                PreviewButton.Enabled = false;
+            }
+        }
+
+
+        private void ScreenSaverEnabledCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ScreenSaverEnabledCheckBox.Checked)
+            {
+                ScreenSaverIdleTimeBox.Enabled = true;
+                ScreenSaverOpacityBox.Enabled = true;
+                PreviewButton.Enabled = true;
+            }
+            else
+            {
+                ScreenSaverIdleTimeBox.Enabled = false;
+                ScreenSaverOpacityBox.Enabled = false;
+                PreviewButton.Enabled = false;
+            }
         }
 
         // Set status
@@ -264,5 +392,6 @@ namespace AutoMouseMover
         }
 
         #endregion
+
     }
 }

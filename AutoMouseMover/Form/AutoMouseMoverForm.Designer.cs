@@ -28,6 +28,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            ScreenSaverEnabledCheckBox = new System.Windows.Forms.CheckBox();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoMouseMoverForm));
             StartButton = new System.Windows.Forms.Button();
             MovingTimeLabel = new System.Windows.Forms.Label();
@@ -47,16 +48,39 @@
             StopButton = new System.Windows.Forms.Button();
             MenuStrip = new System.Windows.Forms.MenuStrip();
             StripMenuAbout = new System.Windows.Forms.ToolStripMenuItem();
+            IdleScreensaverTimer = new System.Windows.Forms.Timer(components);
+            ScreenSaverIdleTimeBox = new System.Windows.Forms.NumericUpDown();
+            label1 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            ScreenSaverOpacityBox = new System.Windows.Forms.NumericUpDown();
+            PreviewButton = new System.Windows.Forms.Button();
+            ScreenSaverEnabledCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)MovingPixelBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovingPeriodBox).BeginInit();
             StatusStrip.SuspendLayout();
             TrayBarContextMenu.SuspendLayout();
             MenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ScreenSaverIdleTimeBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ScreenSaverOpacityBox).BeginInit();
             SuspendLayout();
+            // 
+            // ScreenSaverEnabledCheckBox
+            // 
+            ScreenSaverEnabledCheckBox.AutoSize = true;
+            ScreenSaverEnabledCheckBox.Checked = true;
+            ScreenSaverEnabledCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            ScreenSaverEnabledCheckBox.Location = new System.Drawing.Point(26, 161);
+            ScreenSaverEnabledCheckBox.Name = "ScreenSaverEnabledCheckBox";
+            ScreenSaverEnabledCheckBox.Size = new System.Drawing.Size(211, 29);
+            ScreenSaverEnabledCheckBox.TabIndex = 20;
+            ScreenSaverEnabledCheckBox.Text = "Screen Saver Enabled ";
+            ScreenSaverEnabledCheckBox.UseVisualStyleBackColor = true;
+            ScreenSaverEnabledCheckBox.CheckedChanged += ScreenSaverEnabledCheckBox_CheckedChanged;
             // 
             // StartButton
             // 
-            StartButton.Location = new System.Drawing.Point(24, 288);
+            StartButton.Location = new System.Drawing.Point(24, 300);
             StartButton.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             StartButton.Name = "StartButton";
             StartButton.Size = new System.Drawing.Size(125, 44);
@@ -188,7 +212,7 @@
             // StopButton
             // 
             StopButton.Enabled = false;
-            StopButton.Location = new System.Drawing.Point(342, 288);
+            StopButton.Location = new System.Drawing.Point(342, 300);
             StopButton.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             StopButton.Name = "StopButton";
             StopButton.Size = new System.Drawing.Size(125, 44);
@@ -215,11 +239,85 @@
             StripMenuAbout.Text = "About";
             StripMenuAbout.Click += StripMenuAbout_Click;
             // 
+            // IdleScreensaverTimer
+            // 
+            IdleScreensaverTimer.Interval = 300;
+            IdleScreensaverTimer.Tick += IdleScreensaverTimer_Tick;
+            // 
+            // ScreenSaverIdleTimeBox
+            // 
+            ScreenSaverIdleTimeBox.Location = new System.Drawing.Point(296, 201);
+            ScreenSaverIdleTimeBox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            ScreenSaverIdleTimeBox.Maximum = new decimal(new int[] { 3600, 0, 0, 0 });
+            ScreenSaverIdleTimeBox.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            ScreenSaverIdleTimeBox.Name = "ScreenSaverIdleTimeBox";
+            ScreenSaverIdleTimeBox.Size = new System.Drawing.Size(84, 31);
+            ScreenSaverIdleTimeBox.TabIndex = 15;
+            ScreenSaverIdleTimeBox.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(48, 205);
+            label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(184, 25);
+            label1.TabIndex = 14;
+            label1.Text = "ScreenSaver Idle Time";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(392, 204);
+            label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(87, 25);
+            label2.TabIndex = 16;
+            label2.Text = "second(s)";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(48, 252);
+            label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(173, 25);
+            label3.TabIndex = 17;
+            label3.Text = "ScreenSaver Opacity";
+            // 
+            // ScreenSaverOpacityBox
+            // 
+            ScreenSaverOpacityBox.Location = new System.Drawing.Point(294, 250);
+            ScreenSaverOpacityBox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            ScreenSaverOpacityBox.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            ScreenSaverOpacityBox.Name = "ScreenSaverOpacityBox";
+            ScreenSaverOpacityBox.Size = new System.Drawing.Size(84, 31);
+            ScreenSaverOpacityBox.TabIndex = 18;
+            ScreenSaverOpacityBox.Value = new decimal(new int[] { 60, 0, 0, 0 });
+            // 
+            // PreviewButton
+            // 
+            PreviewButton.Location = new System.Drawing.Point(392, 244);
+            PreviewButton.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            PreviewButton.Name = "PreviewButton";
+            PreviewButton.Size = new System.Drawing.Size(87, 43);
+            PreviewButton.TabIndex = 19;
+            PreviewButton.Text = "Preview";
+            PreviewButton.UseVisualStyleBackColor = true;
+            PreviewButton.Click += PreviewButton_Click;
+            // 
             // AutoMouseMoverForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(491, 398);
+            Controls.Add(ScreenSaverEnabledCheckBox);
+            Controls.Add(PreviewButton);
+            Controls.Add(ScreenSaverOpacityBox);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(ScreenSaverIdleTimeBox);
+            Controls.Add(label1);
             Controls.Add(StopButton);
             Controls.Add(StatusStrip);
             Controls.Add(MenuStrip);
@@ -246,6 +344,8 @@
             TrayBarContextMenu.ResumeLayout(false);
             MenuStrip.ResumeLayout(false);
             MenuStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)ScreenSaverIdleTimeBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ScreenSaverOpacityBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -270,6 +370,14 @@
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
         private System.Windows.Forms.MenuStrip MenuStrip;
         private System.Windows.Forms.ToolStripMenuItem StripMenuAbout;
+        private System.Windows.Forms.Timer IdleScreensaverTimer;
+        private System.Windows.Forms.NumericUpDown ScreenSaverIdleTimeBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown ScreenSaverOpacityBox;
+        private System.Windows.Forms.Button PreviewButton;
+        private System.Windows.Forms.CheckBox ScreenSaverEnabledCheckBox;
     }
 }
 

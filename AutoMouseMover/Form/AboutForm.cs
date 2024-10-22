@@ -29,7 +29,7 @@ namespace AutoMouseMover
     //
     // About form
     //
-    public partial class AboutForm : Form
+    public partial class AboutForm : System.Windows.Forms.Form
     {
         //
         // Constructor

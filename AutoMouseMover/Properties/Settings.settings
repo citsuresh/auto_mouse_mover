@@ -8,5 +8,14 @@
     <Setting Name="MovingPixel" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
+    <Setting Name="ScreenSaverOpacity" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">65</Value>
+    </Setting>
+    <Setting Name="ScreenSaverIdleTimeInSeconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="ScreenSaverEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

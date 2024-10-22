@@ -46,5 +46,41 @@ namespace AutoMouseMover.Properties {
                 this["MovingPixel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("65")]
+        public double ScreenSaverOpacity {
+            get {
+                return ((double)(this["ScreenSaverOpacity"]));
+            }
+            set {
+                this["ScreenSaverOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int ScreenSaverIdleTimeInSeconds {
+            get {
+                return ((int)(this["ScreenSaverIdleTimeInSeconds"]));
+            }
+            set {
+                this["ScreenSaverIdleTimeInSeconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ScreenSaverEnabled {
+            get {
+                return ((bool)(this["ScreenSaverEnabled"]));
+            }
+            set {
+                this["ScreenSaverEnabled"] = value;
+            }
+        }
     }
 }

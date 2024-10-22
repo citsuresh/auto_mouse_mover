@@ -25,8 +25,16 @@
     <ApplicationIcon>app_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="app_icon_green.ico" />
+    <None Remove="app_icon_red.ico" />
+    <None Remove="Resources\app_icon_green.ico" />
+    <None Remove="Resources\app_icon_red.ico" />
+    <None Remove="Resources\app_icon_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="app_icon.ico" />
-    <Content Include="app_icon_white.ico" />
+    <EmbeddedResource Include="app_icon_red.ico" />
+    <EmbeddedResource Include="app_icon_white.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -48,6 +56,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="app_icon_green.ico" />
+    <EmbeddedResource Include="Resources\app_icon_green.ico" />
+    <EmbeddedResource Include="Resources\app_icon_red.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\app_icon_white.ico" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
