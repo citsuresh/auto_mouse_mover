@@ -116,7 +116,7 @@ namespace AutoMouseMover
                     TrayBarIcon.Icon = new Icon(stream);
                 }
             }
-            
+
             // Initialize auto mouse mover class
             mAutoMouseMover.Initialize((int)MovingPixelBox.Value);
             // Set timer interval and start it
@@ -165,6 +165,11 @@ namespace AutoMouseMover
         {
             AboutForm about_form = new AboutForm();
             about_form.ShowDialog();
+        }
+
+        private void StripMenuExit_Click(object sender, EventArgs e)
+        {
+            TrayBarMenuExit_Click(this, e);
         }
 
         // Open button in tray bar context menu
@@ -392,6 +397,5 @@ namespace AutoMouseMover
         }
 
         #endregion
-
     }
 }

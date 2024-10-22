@@ -28,7 +28,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            ScreenSaverEnabledCheckBox = new System.Windows.Forms.CheckBox();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoMouseMoverForm));
             StartButton = new System.Windows.Forms.Button();
             MovingTimeLabel = new System.Windows.Forms.Label();
@@ -36,6 +35,7 @@
             MovingPixelBox = new System.Windows.Forms.NumericUpDown();
             MovingPeriodBox = new System.Windows.Forms.NumericUpDown();
             MovingTimeSecondLabel = new System.Windows.Forms.Label();
+            ScreenSaverEnabledCheckBox = new System.Windows.Forms.CheckBox();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             CursorTimer = new System.Windows.Forms.Timer(components);
@@ -55,6 +55,7 @@
             label3 = new System.Windows.Forms.Label();
             ScreenSaverOpacityBox = new System.Windows.Forms.NumericUpDown();
             PreviewButton = new System.Windows.Forms.Button();
+            StripMenuExit = new System.Windows.Forms.ToolStripMenuItem();
             ScreenSaverEnabledCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)MovingPixelBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovingPeriodBox).BeginInit();
@@ -224,7 +225,7 @@
             // MenuStrip
             // 
             MenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { StripMenuAbout });
+            MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { StripMenuAbout, StripMenuExit });
             MenuStrip.Location = new System.Drawing.Point(0, 0);
             MenuStrip.Name = "MenuStrip";
             MenuStrip.Padding = new System.Windows.Forms.Padding(10, 3, 0, 3);
@@ -306,6 +307,13 @@
             PreviewButton.UseVisualStyleBackColor = true;
             PreviewButton.Click += PreviewButton_Click;
             // 
+            // StripMenuExit
+            // 
+            StripMenuExit.Name = "StripMenuExit";
+            StripMenuExit.Size = new System.Drawing.Size(55, 29);
+            StripMenuExit.Text = "Exit";
+            StripMenuExit.Click += StripMenuExit_Click;
+            // 
             // AutoMouseMoverForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -378,6 +386,7 @@
         private System.Windows.Forms.NumericUpDown ScreenSaverOpacityBox;
         private System.Windows.Forms.Button PreviewButton;
         private System.Windows.Forms.CheckBox ScreenSaverEnabledCheckBox;
+        private System.Windows.Forms.ToolStripMenuItem StripMenuExit;
     }
 }
 
