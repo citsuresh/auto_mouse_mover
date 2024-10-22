@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using AutoMouseMover.Logic;
 using AutoMouseMover.Utils;
@@ -56,6 +57,9 @@ namespace AutoMouseMover
         // Settings
         private SettingsHelper      mSettings;
 
+        private bool mApplicationExiting;
+        ComponentResourceManager Resources;
+
         #endregion
 
         //
@@ -66,6 +70,7 @@ namespace AutoMouseMover
         // Constructor
         public AutoMouseMoverForm()
         {
+            this.Resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoMouseMoverForm));
             InitializeComponent();
             // Create classes
             mAutoMouseMover = new AutomaticMouseMover();
@@ -74,6 +79,7 @@ namespace AutoMouseMover
             LoadSettings();
             // Set status
             SetStatus(STATUS_IDLE_STR);
+            MinimizeWindowToTrayBar();
         }
 
         #endregion
@@ -88,13 +94,9 @@ namespace AutoMouseMover
         {
             // Disable GUI on start
             DisableGuiOnStart();
-            // Minimize to tray bar if requested
-            if (MinimizeToTrayBarBox.Checked)
-            {
-                MinimizeWindowToTrayBar();
-            }
             // Set status
             SetStatus(STATUS_RUNNING_STR);
+            TrayBarIcon.Icon = (System.Drawing.Icon)this.Resources.GetObject("app_icon_green");
             // Initialize auto mouse mover class
             mAutoMouseMover.Initialize((int) MovingPixelBox.Value);
             // Set timer interval and start it
@@ -106,15 +108,9 @@ namespace AutoMouseMover
         private void StopButton_Click(object sender, EventArgs e)
         {
             SetStatus(STATUS_IDLE_STR);
+            TrayBarIcon.Icon = (System.Drawing.Icon)this.Resources.GetObject("app_icon_white");
             EnableGuiOnStop();
             CursorTimer.Stop();
-        }
-
-        // Minimize to tray icon check box changed
-        private void MinimizeToTrayBarBox_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowTrayBarIconBox.Enabled = MinimizeToTrayBarBox.Checked;
-            ShowTrayBarIconBox.Checked = MinimizeToTrayBarBox.Checked;
         }
 
         // Tray icon double clicked
@@ -136,10 +132,23 @@ namespace AutoMouseMover
             RestoreWindowFromTrayBar();
         }
 
-        // Close button in tray bar context menu
-        private void TrayBarMenuClose_Click(object sender, EventArgs e)
+        // Start button in tray bar context menu
+        private void TrayBarMenuStart_Click(object sender, EventArgs e)
+        {
+            StartButton_Click(this, EventArgs.Empty);
+        }
+
+        // Stop button in tray bar context menu
+        private void TrayBarMenuStop_Click(object sender, EventArgs e)
+        {
+            StopButton_Click(this, EventArgs.Empty);
+        }
+
+        // Exit button in tray bar context menu
+        private void TrayBarMenuExit_Click(object sender, EventArgs e)
         {
             CursorTimer.Stop();
+            mApplicationExiting = true;
             Close();
         }
 
@@ -154,13 +163,18 @@ namespace AutoMouseMover
         private void AutoMouseMoverForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveSettings();
+            this.Hide();
+            if (!mApplicationExiting)
+            {
+                e.Cancel = true;
+            }
         }
 
         // Form resize
         private void AutoMouseMoverForm_Resize(object sender, EventArgs e)
         {
             // If window is minized when timer is enabled, minimize it to tray bar
-            if ((WindowState == FormWindowState.Minimized) && (CursorTimer.Enabled))
+            if ((WindowState == FormWindowState.Minimized))
             {
                 MinimizeWindowToTrayBar();
             }
@@ -186,8 +200,6 @@ namespace AutoMouseMover
             {
                 MovingPeriodBox.Value        = mSettings.MovingTime;
                 MovingPixelBox.Value         = mSettings.MovingPixel;
-                MinimizeToTrayBarBox.Checked = mSettings.MinimizeToTrayBar;
-                ShowTrayBarIconBox.Checked   = mSettings.ShowTrayBarIcon;
             }
             catch
             {
@@ -196,8 +208,6 @@ namespace AutoMouseMover
                 // Set again
                 MovingPeriodBox.Value        = mSettings.MovingTime;
                 MovingPixelBox.Value         = mSettings.MovingPixel;
-                MinimizeToTrayBarBox.Checked = mSettings.MinimizeToTrayBar;
-                ShowTrayBarIconBox.Checked   = mSettings.ShowTrayBarIcon;
             }
         }
 
@@ -206,8 +216,6 @@ namespace AutoMouseMover
         {
             mSettings.MovingTime        = (int) MovingPeriodBox.Value;
             mSettings.MovingPixel       = (int) MovingPixelBox.Value;
-            mSettings.MinimizeToTrayBar = MinimizeToTrayBarBox.Checked;
-            mSettings.ShowTrayBarIcon   = ShowTrayBarIconBox.Checked;
             mSettings.Save();
         }
 
@@ -216,10 +224,10 @@ namespace AutoMouseMover
         {
             MovingPeriodBox.Enabled      = false;
             MovingPixelBox.Enabled       = false;
-            MinimizeToTrayBarBox.Enabled = false;
-            ShowTrayBarIconBox.Enabled   = false;
             StartButton.Enabled          = false;
             StopButton.Enabled           = true;
+            TrayBarMenuStart.Enabled = false;
+            TrayBarMenuStop.Enabled = true;
         }
 
         // Enable GUI on stop
@@ -227,23 +235,22 @@ namespace AutoMouseMover
         {
             MovingPeriodBox.Enabled      = true;
             MovingPixelBox.Enabled       = true;
-            MinimizeToTrayBarBox.Enabled = true;
-            ShowTrayBarIconBox.Enabled   = true;
             StartButton.Enabled          = true;
             StopButton.Enabled           = false;
+            TrayBarMenuStart.Enabled = true;
+            TrayBarMenuStop.Enabled = false;
         }
 
         // Set status
         private void SetStatus(string cText)
         {
-            StatusLabel.Text = String.Format(StatusLabel.Text, cText);
+            StatusLabel.Text = String.Format("Status: {0}", cText);
         }
 
         // Minimize window to tray bar
         private void MinimizeWindowToTrayBar()
         {
             ShowInTaskbar = false;
-            TrayBarIcon.Visible = ShowTrayBarIconBox.Checked;
             TrayBarIcon.ShowBalloonTip(BALLOON_TIP_TIMEOUT);
             Hide();
         }
@@ -251,9 +258,8 @@ namespace AutoMouseMover
         // Restore window from tray bar
         private void RestoreWindowFromTrayBar()
         {
-            TrayBarIcon.Visible = false;
-            ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
+            ShowInTaskbar = true;
             Show();
         }
 

@@ -75,8 +75,6 @@ namespace AutoMouseMover.Utils
         {
             mMovingPeriod      = Properties.Settings.Default.MovingPeriod;
             mMovingPixel       = Properties.Settings.Default.MovingPixel;
-            mMinimizeToTrayBar = Properties.Settings.Default.MinimizeToTrayBar;
-            mShowTrayBarIcon   = Properties.Settings.Default.ShowTrayBarIcon;
         }
 
         // Load default settings
@@ -93,8 +91,6 @@ namespace AutoMouseMover.Utils
         {
             Properties.Settings.Default.MovingPeriod      = mMovingPeriod;
             Properties.Settings.Default.MovingPixel       = mMovingPixel;
-            Properties.Settings.Default.MinimizeToTrayBar = mMinimizeToTrayBar;
-            Properties.Settings.Default.ShowTrayBarIcon   = mShowTrayBarIcon;
             Properties.Settings.Default.Save();
         }
 
