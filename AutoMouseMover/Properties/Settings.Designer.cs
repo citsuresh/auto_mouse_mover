@@ -61,7 +61,7 @@ namespace AutoMouseMover.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
         public int ScreenSaverIdleTimeInSeconds {
             get {
                 return ((int)(this["ScreenSaverIdleTimeInSeconds"]));
