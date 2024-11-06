@@ -20,16 +20,16 @@
  * THE SOFTWARE.
  */
 
+using AutoMouseMover.Form;
+using AutoMouseMover.Logic;
+using AutoMouseMover.Utils;
+using AutoMouseMover.WinWrapper;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using AutoMouseMover.Form;
-using AutoMouseMover.Logic;
-using AutoMouseMover.Utils;
-using AutoMouseMover.WinWrapper;
 
 namespace AutoMouseMover
 {
@@ -126,9 +126,9 @@ namespace AutoMouseMover
             if (mSettings.ScreenSaverEnabled)
             {
                 HookManager.KeyPress -= HookManager_KeyPress;
-                HookManager.MouseMove -= HookManager_MouseMove;
+                HookManager.MouseAction -= HookManager_MouseAction;
                 HookManager.KeyPress += HookManager_KeyPress;
-                HookManager.MouseMove += HookManager_MouseMove;
+                HookManager.MouseAction += HookManager_MouseAction;
                 lastInputTime = DateTime.Now;
                 IdleScreensaverTimer.Interval = mSettings.ScreenSaverIdleTimeInSeconds;
                 IdleScreensaverTimer.Start();
@@ -150,7 +150,7 @@ namespace AutoMouseMover
             CursorTimer.Stop();
 
             HookManager.KeyPress -= HookManager_KeyPress;
-            HookManager.MouseMove -= HookManager_MouseMove;
+            HookManager.MouseAction -= HookManager_MouseAction;
             IdleScreensaverTimer.Stop();
         }
 
@@ -254,14 +254,29 @@ namespace AutoMouseMover
             }
         }
 
-        private void HookManager_MouseMove(object sender, MouseEventArgs e)
+        private void HookManager_MouseAction(object sender, MouseEventArgs e)
         {
             if (!mMouseMovedByApplication)
             {
-                lastInputTime = DateTime.Now;
-                if (OverlayForm.Visible)
+                if (e.Button == MouseButtons.Middle && e.Delta != 0)
                 {
-                    OverlayForm.Hide();
+                    var variance = e.Delta / 100;
+                    var newValue = ScreenSaverOpacityBox.Value + variance;
+                    if (newValue >= ScreenSaverOpacityBox.Minimum && newValue <= ScreenSaverOpacityBox.Maximum)
+                    {
+                        ScreenSaverOpacityBox.Value = newValue;
+                        mSettings.ScreenSaverOpacity = (int)newValue;
+                        OverlayForm.InitializeAlpha(mSettings.ScreenSaverOpacity);
+                    }
+                }
+                else
+                {
+                    lastInputTime = DateTime.Now;
+
+                    if (OverlayForm.Visible)
+                    {
+                        OverlayForm.Hide();
+                    }
                 }
             }
         }
@@ -269,11 +284,15 @@ namespace AutoMouseMover
         private void PreviewButton_Click(object sender, EventArgs e)
         {
             HookManager.KeyPress -= HookManager_KeyPress;
-            HookManager.MouseMove -= HookManager_MouseMove;
+            HookManager.MouseAction -= HookManager_MouseAction;
             HookManager.KeyPress += HookManager_KeyPress;
-            HookManager.MouseMove += HookManager_MouseMove;
-            OverlayForm.InitializeAlpha((int)ScreenSaverOpacityBox.Value);
-            OverlayForm.Show();
+            HookManager.MouseAction += HookManager_MouseAction;
+            mSettings.ScreenSaverOpacity = (int)ScreenSaverOpacityBox.Value;
+            OverlayForm.InitializeAlpha(mSettings.ScreenSaverOpacity);
+            OverlayForm.ShowDialog();
+            HookManager.KeyPress -= HookManager_KeyPress;
+            HookManager.MouseAction -= HookManager_MouseAction;
+            this.BringToFront();
         }
 
         #endregion

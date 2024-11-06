@@ -27,7 +27,7 @@ namespace AutoMouseMover.Form
         public void InitializeAlpha(double opacity)
         {
             // Use the SetLayeredWindowAttributes to adjust the opacity
-            byte alpha = (byte)( (opacity/100) * 256);
+            byte alpha = (byte)((opacity / 100) * 255);
             SetLayeredWindowAttributes(this.Handle, 0, alpha, 0x02);
         }
 
