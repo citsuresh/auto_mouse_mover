@@ -39,6 +39,7 @@
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             CursorTimer = new System.Windows.Forms.Timer(components);
+            DoubleClickTimer = new System.Windows.Forms.Timer(components);
             TrayBarIcon = new System.Windows.Forms.NotifyIcon(components);
             TrayBarContextMenu = new System.Windows.Forms.ContextMenuStrip(components);
             TrayBarMenuOpen = new System.Windows.Forms.ToolStripMenuItem();
@@ -163,6 +164,10 @@
             // 
             CursorTimer.Tick += CursorTimer_Tick;
             // 
+            // DoubleClickTimer
+            // 
+            DoubleClickTimer.Tick += DoubleClickTimer_Tick;
+            // 
             // TrayBarIcon
             // 
             TrayBarIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
@@ -172,6 +177,7 @@
             TrayBarIcon.Icon = (System.Drawing.Icon)resources.GetObject("TrayBarIcon.Icon");
             TrayBarIcon.Text = "Automatic mouse mover running";
             TrayBarIcon.Visible = true;
+            TrayBarIcon.MouseClick += TrayBarIcon_MouseClick;
             TrayBarIcon.MouseDoubleClick += TrayBarIcon_MouseDoubleClick;
             // 
             // TrayBarContextMenu
@@ -368,6 +374,7 @@
         private System.Windows.Forms.Label MovingTimeSecondLabel;
         private System.Windows.Forms.StatusStrip StatusStrip;
         private System.Windows.Forms.Timer CursorTimer;
+        private System.Windows.Forms.Timer DoubleClickTimer;
         private System.Windows.Forms.NotifyIcon TrayBarIcon;
         private System.Windows.Forms.ContextMenuStrip TrayBarContextMenu;
         private System.Windows.Forms.ToolStripMenuItem TrayBarMenuOpen;

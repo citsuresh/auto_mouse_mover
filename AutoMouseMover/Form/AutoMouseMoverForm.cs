@@ -68,6 +68,7 @@ namespace AutoMouseMover
         private ScreensaverOverlayForm OverlayForm;
         private DateTime lastInputTime;
         private bool mMouseMovedByApplication;
+        private bool isDoubleClick = false;
 
         #endregion
 
@@ -81,6 +82,7 @@ namespace AutoMouseMover
         {
             this.Resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoMouseMoverForm));
             InitializeComponent();
+            DoubleClickTimer.Interval = SystemInformation.DoubleClickTime;
             // Create classes
             mAutoMouseMover = new AutomaticMouseMover();
             mSettings = new SettingsHelper();
@@ -157,7 +159,42 @@ namespace AutoMouseMover
         // Tray icon double clicked
         private void TrayBarIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            RestoreWindowFromTrayBar();
+            if (e.Button == MouseButtons.Left)
+            {
+                isDoubleClick = true;
+                DoubleClickTimer.Stop();
+
+                if (CursorTimer.Enabled)
+                {
+                    StopButton_Click(this, EventArgs.Empty);
+                }
+                else
+                {
+                    StartButton_Click(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        // Tray icon double clicked
+        private void TrayBarIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                DoubleClickTimer.Start();
+            }
+        }
+
+        private void DoubleClickTimer_Tick(object sender, EventArgs e)
+        {
+            DoubleClickTimer.Stop();
+            if (!isDoubleClick)
+            {
+                // Handle single-click event
+                // MessageBox.Show("Single Clicked!");
+                RestoreWindowFromTrayBar();
+            }
+
+            isDoubleClick = false;
         }
 
         // About button in menu strip
