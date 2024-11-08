@@ -291,25 +291,29 @@ namespace AutoMouseMover
             }
         }
 
-        private void HookManager_MouseAction(object sender, MouseEventArgs e)
+        private async void HookManager_MouseAction(object sender, MouseEventArgs e)
         {
             if (!mMouseMovedByApplication)
             {
+                lastInputTime = DateTime.Now;
+
                 if (e.Button == MouseButtons.Middle && e.Delta != 0)
                 {
-                    var variance = e.Delta / 100;
-                    var newValue = ScreenSaverOpacityBox.Value + variance;
-                    if (newValue >= ScreenSaverOpacityBox.Minimum && newValue <= ScreenSaverOpacityBox.Maximum)
+                    var title = ActiveWindow.GetActiveWindowTitle();
+                    if (title == this.Text || title == OverlayForm.Text)
                     {
-                        ScreenSaverOpacityBox.Value = newValue;
-                        mSettings.ScreenSaverOpacity = (int)newValue;
-                        OverlayForm.InitializeAlpha(mSettings.ScreenSaverOpacity);
+                        var variance = e.Delta / 100;
+                        var newValue = ScreenSaverOpacityBox.Value + variance;
+                        if (newValue >= ScreenSaverOpacityBox.Minimum && newValue <= ScreenSaverOpacityBox.Maximum)
+                        {
+                            ScreenSaverOpacityBox.Value = newValue;
+                            mSettings.ScreenSaverOpacity = (int)newValue;
+                            OverlayForm.InitializeAlpha(mSettings.ScreenSaverOpacity);
+                        }
                     }
                 }
                 else
                 {
-                    lastInputTime = DateTime.Now;
-
                     if (OverlayForm.Visible)
                     {
                         OverlayForm.Hide();
