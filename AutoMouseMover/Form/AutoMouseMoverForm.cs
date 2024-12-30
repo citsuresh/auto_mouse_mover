@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace AutoMouseMover
@@ -172,6 +173,9 @@ namespace AutoMouseMover
                 {
                     StartButton_Click(this, EventArgs.Empty);
                 }
+
+                Thread.Sleep(DoubleClickTimer.Interval);
+                isDoubleClick = false;
             }
         }
 

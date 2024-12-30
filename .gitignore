@@ -3,3 +3,5 @@ bin
 obj
 .vs
 *.v12.suo
+/.cr
+/AutoMouseMover/AutoMouseMover.csproj.user
